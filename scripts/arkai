@@ -1,0 +1,4 @@
+#!/bin/bash
+
+. $HOME/.local/bin/.arkai/docker-clean+pull.sh
+docker compose -f $HOME/.local/bin/.arkai/arkai_docker-compose.yml -p arkai up -d

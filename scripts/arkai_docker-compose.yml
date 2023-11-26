@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  arkai-mongo:
+    container_name: arkai-mongo
+    image: mongo:latest
+    restart: unless-stopped
+    command: mongod --port $MONGO_PORT --auth
+    ports:
+      - $MONGO_PORT:$MONGO_PORT
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_USER
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
+      MONGODB_DATA_DIR: /data/db
+    volumes:
+      - mongodata:/data/db
+    networks:
+      - database
+  arkai:
+    container_name: arkai
+    image: $DOCKERHUB_USER/$DOCKERHUB_REPOSITORY:arkadias-discordbot
+    restart: on-failure
+    depends_on:
+      - arkai-mongo
+    environment:
+      BOT_CONFIG: $BOT_CONFIG
+      DISCORD_TOKEN: $DISCORD_TOKEN
+      MONGO_USER: $MONGO_USER
+      MONGO_PASSWORD: $MONGO_PASSWORD
+      MONGO_HOST: $MONGO_HOST
+      MONGO_PORT: $MONGO_PORT
+    networks:
+      - database
+networks:
+  database:
+    driver: bridge
+volumes:
+  mongodata:
+    driver: local
